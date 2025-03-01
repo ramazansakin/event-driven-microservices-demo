@@ -1,7 +1,8 @@
 # Running the application
 - Please enter the correct credentials in twitter4j.properties file.
-- Then run TwitterToKafkaServiceApplication inside IntelliJ, or run with mvn spring-boot:run command
-- Check docker-compose folder, and run kafka cluster using docker-compose -f common.yml -f kafka_cluster.yml up command
-- Then check the docker containers using docker ps command
-- Use standalone kafkacat or docker container(https://hub.docker.com/r/confluentinc/cp-kafkacat) to install kafkacat
-- Then check the kafka cluster information using kafkacat -L -b localhost:19092 command
+- Then run mvn install -DskipTests command
+- Then go to docker-compose folder and run docker-compose up command to run kafka cluster and twitter-to-kafka-service together
+- Check the pom.xml file and spring-boot-maven-plugin section in twitter-to-kafka-service, where we configure 
+the build-image goal to create docker image with mvn install command
+- Check the services.yml file under docker-compose folder which includes the compose definition 
+for microservice, twitter-to-kafka-service
