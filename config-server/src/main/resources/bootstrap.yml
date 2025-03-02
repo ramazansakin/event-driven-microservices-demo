@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: configserver
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/ramazansakin/event-driven-microservices-demo-cloud-config-repo
+          default-label: main
+          username: ramazansakin
+          password: ****
+          clone-on-start: true
+    fail-fast: true
+  security:
+    user:
+      name: spring_cloud_user
+      password: ****
