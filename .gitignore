@@ -34,3 +34,5 @@ build/
 /generated/
 
 .DS_Store
+
+.idea/

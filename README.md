@@ -1,5 +1,7 @@
 # Running the application
-- Please enter the correct credentials in twitter4j.properties file.
+- Please enter the correct credentials in twitter4j.properties file in twitter-to-kafka-service 
+and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
-- Check the docker-compose folder and services.yml file that includes both config server and twitter to kafka service
-- Then go to docker-compose folder and run docker-compose up command to run kafka cluster, config-server and twitter-to-kafka-service 
+- Then run docker-compose up command in docker-compose folder
+- Then run kafka-to-elastic-service in intelliJ
+- Check new kafka-to-elastic-service, which is the 2nd microservice in our system
