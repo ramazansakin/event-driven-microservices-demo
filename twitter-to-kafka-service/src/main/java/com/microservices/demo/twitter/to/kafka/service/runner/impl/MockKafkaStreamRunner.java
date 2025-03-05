@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -75,6 +76,8 @@ public class MockKafkaStreamRunner implements StreamRunner {
                     Tweet tweet = new Tweet();
                     tweet.setText(tweetText);
                     tweet.setId(String.valueOf(System.currentTimeMillis()));
+                    tweet.setAuthorId("1");
+                    tweet.setCreatedAt(OffsetDateTime.now());
                     twitterKafkaStatusListener.onTweet(tweet);
                     TimeUnit.MILLISECONDS.sleep(sleepTimeMs);
                 }
