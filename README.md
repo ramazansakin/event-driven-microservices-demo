@@ -3,4 +3,4 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check elastic-query-client under elastic module, which is created to write search logic against elasticsearch
+- Check elastic-query-client under elastic module, where we added repository option
