@@ -3,20 +3,17 @@ package com.microservices.demo.twitter.to.kafka.service.runner.impl;
 import com.microservices.demo.config.TwitterToKafkaServiceConfigData;
 import com.microservices.demo.twitter.to.kafka.service.listener.TwitterKafkaStatusListener;
 import com.microservices.demo.twitter.to.kafka.service.runner.StreamRunner;
-import com.twitter.clientlib.ApiClient;
-import com.twitter.clientlib.JSON;
-import com.twitter.clientlib.api.TwitterApi;
-import com.twitter.clientlib.model.StreamingTweetResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import twitter4j.FilterQuery;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
 
 import javax.annotation.PreDestroy;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Set;
+import java.util.Arrays;
 
 @Component
 @ConditionalOnProperty(name = "twitter-to-kafka-service.enable-mock-tweets", havingValue = "false", matchIfMissing = true)
@@ -28,7 +25,7 @@ public class TwitterKafkaStreamRunner implements StreamRunner {
 
     private final TwitterKafkaStatusListener twitterKafkaStatusListener;
 
-    private TwitterApi apiInstance;
+    private TwitterStream twitterStream;
 
     public TwitterKafkaStreamRunner(TwitterToKafkaServiceConfigData configData,
                                     TwitterKafkaStatusListener statusListener) {
@@ -37,40 +34,24 @@ public class TwitterKafkaStreamRunner implements StreamRunner {
     }
 
     @Override
-    public void start() {
-        ApiClient client = new ApiClient();
-        client.setBearerToken("xxxx"); // Replace with your Bearer Token
-
-        apiInstance = new TwitterApi(client);
-
-        try (InputStream stream = apiInstance.tweets().searchStream()
-                .tweetFields(Set.of("id", "text", "created_at"))
-                .expansions(Set.of("author_id"))
-                .userFields(Set.of("id", "name", "username"))
-                .execute()) {
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                if (!line.trim().isEmpty()) {
-                    StreamingTweetResponse response = JSON.deserialize(line, StreamingTweetResponse.class);
-                    if (response.getData() != null) {
-                        twitterKafkaStatusListener.onTweet(response.getData());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOG.error("Exception when calling Twitter API: ", e);
-        }
+    public void start() throws TwitterException {
+        twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.addListener(twitterKafkaStatusListener);
+        addFilter();
     }
 
     @PreDestroy
     public void shutdown() {
-        if (apiInstance != null) {
-            LOG.info("Closing Twitter stream!");
-            // Close the connection (if applicable)
+        if (twitterStream != null) {
+            LOG.info("Closing twitter stream!");
+            twitterStream.shutdown();
         }
     }
 
+    private void addFilter() {
+        String[] keywords = twitterToKafkaServiceConfigData.getTwitterKeywords().toArray(new String[0]);
+        FilterQuery filterQuery = new FilterQuery(keywords);
+        twitterStream.filter(filterQuery);
+        LOG.info("Started filtering twitter stream for keywords {}", Arrays.toString(keywords));
+    }
 }
