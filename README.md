@@ -3,4 +3,6 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check elastic-query-service, which is the new microservice we started to implement
+- Check elastic-query-service, where we added validation to request/response models and controller using 
+validation annotations
+- Check elastic-query-service, where we added ElasticQueryServiceErrorHandler to handle unexpected exceptions
