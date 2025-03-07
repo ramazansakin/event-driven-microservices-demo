@@ -3,5 +3,5 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check elastic-query-service, where we changed response model and add assembler package to enable hateoas, then
-updated service component to use hateoas enabled assembler to be able to add hateoas links to response
+- Check pom.xml of elastic-query-service, where we added build-image goal to spring-boot-maven-plugin
+- Check services.yml in docker-compose folder, which is updated for elastic-query-service docker image
