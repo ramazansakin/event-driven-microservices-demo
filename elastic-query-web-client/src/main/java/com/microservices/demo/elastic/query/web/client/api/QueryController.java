@@ -2,6 +2,7 @@ package com.microservices.demo.elastic.query.web.client.api;
 
 import com.microservices.demo.elastic.query.web.client.model.ElasticQueryWebClientRequestModel;
 import com.microservices.demo.elastic.query.web.client.model.ElasticQueryWebClientResponseModel;
+import com.microservices.demo.elastic.query.web.client.service.ElasticQueryWebClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,12 @@ import java.util.List;
 public class QueryController {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryController.class);
+
+    private final ElasticQueryWebClient elasticQueryWebClient;
+
+    public QueryController(ElasticQueryWebClient webClient) {
+        this.elasticQueryWebClient = webClient;
+    }
 
     @GetMapping("")
     public String index() {
@@ -39,11 +46,7 @@ public class QueryController {
     public String queryByText(@Valid ElasticQueryWebClientRequestModel requestModel,
                               Model model) {
         LOG.info("Querying with text {}", requestModel.getText());
-        List<ElasticQueryWebClientResponseModel> responseModels = new ArrayList<>();
-        responseModels.add(ElasticQueryWebClientResponseModel.builder()
-                .id("1")
-                .text(requestModel.getText())
-                .build());
+        List<ElasticQueryWebClientResponseModel> responseModels = elasticQueryWebClient.getDataByText(requestModel);
         model.addAttribute("elasticQueryWebClientResponseModels", responseModels);
         model.addAttribute("searchText", requestModel.getText());
         model.addAttribute("elasticQueryWebClientRequestModel",
