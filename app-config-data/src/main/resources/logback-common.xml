@@ -29,12 +29,12 @@
     </appender>
 
 
-    <logger name="com.microservices.demo" level="error" additivity="false">
+    <logger name="com.microservices.demo" level="info" additivity="false">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="error">
+    <root level="info">
         <appender-ref ref="FILE"/>
         <appender-ref ref="STDOUT"/>
     </root>
