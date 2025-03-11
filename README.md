@@ -3,4 +3,4 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check elastic-query-service, which is updated to be a resource server
+- Check elastic-query-web-client, which is updated to be an oauth2 client
