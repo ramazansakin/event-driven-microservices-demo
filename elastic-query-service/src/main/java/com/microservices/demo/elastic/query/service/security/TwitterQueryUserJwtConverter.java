@@ -15,7 +15,6 @@ import static com.microservices.demo.elastic.query.service.Constants.NA;
 
 
 public class TwitterQueryUserJwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
-
     private static final String REALM_ACCESS_CLAIM = "realm_access";
     private static final String ROLES_CLAIM = "roles";
     private static final String SCOPE_CLAIM = "scope";
