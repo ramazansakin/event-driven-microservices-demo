@@ -5,7 +5,7 @@ import com.microservices.demo.elastic.index.client.service.ElasticIndexClient;
 import com.microservices.demo.elastic.model.index.impl.TwitterIndexModel;
 import com.microservices.demo.kafka.admin.client.KafkaAdminClient;
 import com.microservices.demo.kafka.avro.model.TwitterAvroModel;
-import com.microservices.demo.kafka.consumer.api.KafkaConsumer;
+import com.microservices.demo.kafka.to.elastic.service.consumer.KafkaConsumer;
 import com.microservices.demo.kafka.to.elastic.service.transformer.AvroToElasticModelTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
