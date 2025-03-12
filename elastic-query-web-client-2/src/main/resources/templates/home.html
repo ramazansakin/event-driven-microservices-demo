@@ -13,7 +13,7 @@
             </div>
             <div class="col-12" th:switch="${elasticQueryWebClientResponseModels}">
                 <h4 th:case="null">
-                    <span th:text="${error != null} ? ${error + '-' + error_description} : 'No results yet!'"/>
+                    <span th:text="${error != null} ? ${error + error_description} : 'No results yet!'"/>
                 </h4>
                 <div th:case="*">
                     <h4>Search results for '<span th:text="${searchText}"/>'</h4>
