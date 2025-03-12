@@ -27,7 +27,9 @@ public class AvroToDbEntityModelTransformer {
                         idGenerator.generateId()
                         , avroModel.getWord()
                         , avroModel.getWordCount()
-                        , LocalDateTime.ofInstant(Instant.ofEpochMilli(avroModel.getCreatedAt()), ZoneOffset.UTC)))
+                        , LocalDateTime.ofInstant(Instant.ofEpochSecond(avroModel.getCreatedAt()), ZoneOffset.UTC)))
                 .collect(toList());
     }
+
+
 }

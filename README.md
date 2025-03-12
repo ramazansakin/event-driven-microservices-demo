@@ -3,4 +3,4 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check analytics-service, where we completed the service to insert data into postgreSql
+- Check analytics-service, where created an api to be queried for analytics data from query service

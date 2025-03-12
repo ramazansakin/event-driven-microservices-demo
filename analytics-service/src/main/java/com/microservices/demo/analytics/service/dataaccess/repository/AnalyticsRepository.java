@@ -12,6 +12,6 @@ import java.util.UUID;
 public interface AnalyticsRepository extends JpaRepository<AnalyticsEntity, UUID>,
         AnalyticsCustomRepository<AnalyticsEntity, UUID> {
 
-    @Query(value = "select e from AnalyticsEntity e where e.word=:word order by e.recordDate")
+    @Query(value = "select e from AnalyticsEntity e where e.word=:word order by e.recordDate desc")
     List<AnalyticsEntity> getAnalyticsEntitiesByWord(@Param("word") String word, Pageable pageable);
 }

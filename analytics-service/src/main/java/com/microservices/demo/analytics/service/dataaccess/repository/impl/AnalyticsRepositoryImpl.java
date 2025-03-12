@@ -39,7 +39,7 @@ public class AnalyticsRepositoryImpl<T extends BaseEntity<PK>, PK> implements An
             return;
         }
         int batchCnt = 0;
-        for (S entity: entities) {
+        for (S entity : entities) {
             LOG.trace("Persisting entity with id {}", entity.getId());
             this.em.persist(entity);
             batchCnt++;
@@ -55,13 +55,13 @@ public class AnalyticsRepositoryImpl<T extends BaseEntity<PK>, PK> implements An
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public <S extends T> S merge(S entity) {
         return this.em.merge(entity);
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public <S extends T> void batchMerge(Collection<S> entities) {
         if (entities.isEmpty()) {
             LOG.info("No entity found to insert!");

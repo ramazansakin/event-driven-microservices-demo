@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "twitter-analytics")
+@Table(name = "twitter_analytics")
 public class AnalyticsEntity implements BaseEntity<UUID> {
 
     @Id
