@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: analytics-service
+  profiles:
+    active: analytics
+  cloud:
+    config:
+      name: analytics-service,config-client
+      uri: http://localhost:8888
+      username: spring_cloud_user
+      password: ****
