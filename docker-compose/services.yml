@@ -118,8 +118,8 @@ services:
       - "SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI=http://keycloak-authorization-server:9091/auth/realms/microservices-realm/protocol/openid-connect/certs"
       - "SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN-URI=http://keycloak-authorization-server:9091/auth/realms/microservices-realm/protocol/openid-connect/token"
       - "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/postgres?currentSchema=public&binaryTransfer=true&reWriteBatchedInserts=true"
-      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-KAFKA-STATE-STORE_URI=http://kafka-streams-service:8187/kafka-streams-service/get-word-count-by-word/{word}"
-      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-ANALYTICS-DATABASE_URI=http://analytics-service:8188/analytics-service/get-word-count-by-word/{word}"
+      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-KAFKA-STATE-STORE_URI=http://kafka-streams-service/kafka-streams-service/get-word-count-by-word/{word}"
+      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-ANALYTICS-DATABASE_URI=http://analytics-service/analytics-service/get-word-count-by-word/{word}"
       - "ELASTIC-QUERY-SERVICE_WEBCLIENT_QUERY-TYPE=ANALYTICS_DATABASE"
       - "ENCRYPT_KEY=${ENCRYPT_KEY}"
     networks:
@@ -154,8 +154,8 @@ services:
       - "SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN-URI=http://keycloak-authorization-server:9091/auth/realms/microservices-realm/protocol/openid-connect/token"
       - "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/postgres?currentSchema=public&binaryTransfer=true&reWriteBatchedInserts=true"
       - "SPRING_DATASOURCE_INITIALIZATION-MODE=never"
-      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-KAFKA-STATE-STORE_URI=http://kafka-streams-service:8187/kafka-streams-service/get-word-count-by-word/{word}"
-      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-ANALYTICS-DATABASE_URI=http://analytics-service:8188/analytics-service/get-word-count-by-word/{word}"
+      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-KAFKA-STATE-STORE_URI=http://kafka-streams-service/kafka-streams-service/get-word-count-by-word/{word}"
+      - "ELASTIC-QUERY-SERVICE_QUERY-FROM-ANALYTICS-DATABASE_URI=http://analytics-service/analytics-service/get-word-count-by-word/{word}"
       - "ELASTIC-QUERY-SERVICE_WEBCLIENT_QUERY-TYPE=ANALYTICS_DATABASE"
       - "ENCRYPT_KEY=${ENCRYPT_KEY}"
     networks:
@@ -175,8 +175,8 @@ services:
       - config-server
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5010 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=info"
-      - "LOGGING_LEVEL_ROOT=info"
+      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=error"
+      - "LOGGING_LEVEL_ROOT=error"
       - "SERVER_PORT=8184"
       - "SERVER_SERVLET_CONTEXT-PATH=/elastic-query-web-client"
       - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
@@ -208,8 +208,8 @@ services:
       - config-server
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5011 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=info"
-      - "LOGGING_LEVEL_ROOT=info"
+      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=error"
+      - "LOGGING_LEVEL_ROOT=error"
       - "SERVER_PORT=8185"
       - "SERVER_SERVLET_CONTEXT-PATH=/elastic-query-web-client"
       - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
@@ -241,8 +241,8 @@ services:
       - config-server
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5012 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=info"
-      - "LOGGING_LEVEL_ROOT=info"
+      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=error"
+      - "LOGGING_LEVEL_ROOT=error"
       - "SERVER_PORT=8187"
       - "SERVER_SERVLET_CONTEXT-PATH=/kafka-streams-service"
       - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
@@ -268,8 +268,8 @@ services:
       - config-server
     environment:
       - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5013 -Xms128m -Xmx256m"
-      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=info"
-      - "LOGGING_LEVEL_ROOT=info"
+      - "LOGGING_LEVEL_COM_MICROSERVICES_DEMO=error"
+      - "LOGGING_LEVEL_ROOT=error"
       - "SERVER_PORT=8188"
       - "SERVER_SERVLET_CONTEXT-PATH=/analytics-service"
       - "SPRING_CLOUD_CONFIG_URI=http://config-server:8888"
@@ -279,5 +279,35 @@ services:
       - "KAFKA-CONFIG_BOOTSTRAP-SERVERS=kafka-broker-1:9092, kafka-broker-2:9092, kafka-broker-3:9092"
       - "KAFKA-CONFIG_SCHEMA-REGISTRY-URL=http://schema-registry:8081"
       - "ENCRYPT_KEY=${ENCRYPT_KEY}"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+  discovery-service-1:
+    image: ${GROUP_ID}/discovery.service:${SERVICE_VERSION:-latest}
+    ports:
+      - "5014:5014"
+      - "8761:8761"
+    volumes:
+      - "./docker-logs:/workspace/discovery-service/logs"
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5014 -Xms128m -Xmx256m"
+      - "LOGGING_LEVEL_ROOT=info"
+      - "SERVER_PORT=8761"
+      - "SPRING_PROFILES_ACTIVE=peer1"
+      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-1"
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+  discovery-service-2:
+    image: ${GROUP_ID}/discovery.service:${SERVICE_VERSION:-latest}
+    ports:
+      - "5015:5015"
+      - "8762:8762"
+    volumes:
+      - "./docker-logs:/workspace/discovery-service/logs"
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5015 -Xms128m -Xmx256m"
+      - "LOGGING_LEVEL_ROOT=info"
+      - "SERVER_PORT=8762"
+      - "SPRING_PROFILES_ACTIVE=peer2"
+      - "EUREKA_INSTANCE_HOSTNAME=discovery-service-2"
     networks:
       - ${GLOBAL_NETWORK:-services}
