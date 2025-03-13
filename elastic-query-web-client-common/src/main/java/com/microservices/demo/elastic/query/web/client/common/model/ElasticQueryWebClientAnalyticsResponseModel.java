@@ -15,4 +15,5 @@ import java.util.List;
 public class ElasticQueryWebClientAnalyticsResponseModel {
     private List<ElasticQueryWebClientResponseModel> queryResponseModels;
     private Long wordCount;
+    private String fallbackMessage;
 }

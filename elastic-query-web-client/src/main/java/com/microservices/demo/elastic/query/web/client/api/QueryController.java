@@ -48,6 +48,7 @@ public class QueryController {
         model.addAttribute("elasticQueryWebClientResponseModels",
                 responseModel.getQueryResponseModels());
         model.addAttribute("wordCount", responseModel.getWordCount());
+        model.addAttribute("fallbackMessage", responseModel.getFallbackMessage());
         model.addAttribute("searchText", requestModel.getText());
         model.addAttribute("elasticQueryWebClientRequestModel",
                 ElasticQueryWebClientRequestModel.builder().build());
