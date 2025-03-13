@@ -1,11 +1,11 @@
 spring:
   application:
-    name: kafka-streams-service
+    name: gateway-service
   profiles:
-    active: kafka_streams
+    active: gateway
   cloud:
     config:
-      name: kafka-streams-service,config-client
+      name: gateway-service,config-client
       uri: http://localhost:8888
       username: spring_cloud_user
       password: ****
