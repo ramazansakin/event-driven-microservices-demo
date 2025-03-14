@@ -4,6 +4,7 @@ import com.microservices.demo.gateway.service.model.AnalyticsDataFallbackModel;
 import com.microservices.demo.gateway.service.model.QueryServiceFallbackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,12 @@ public class FallbackController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FallbackController.class);
 
+    @Value("${server.port}")
+    private String port;
+
     @PostMapping("/query-fallback")
     public ResponseEntity<QueryServiceFallbackModel> queryServiceFallback() {
-        LOG.info("Returning fallback result for elastic-query-service!");
+        LOG.info("Returning fallback result for elastic-query-service! on port {}", port);
         return ResponseEntity.ok(QueryServiceFallbackModel.builder()
                 .fallbackMessage("Fallback result for elastic-query-service!")
                 .build());
@@ -25,7 +29,7 @@ public class FallbackController {
 
     @PostMapping("/analytics-fallback")
     public ResponseEntity<AnalyticsDataFallbackModel> analyticsServiceFallback() {
-        LOG.info("Returning fallback result for analytics-service!");
+        LOG.info("Returning fallback result for analytics-service! on port {}", port);
         return ResponseEntity.ok(AnalyticsDataFallbackModel.builder()
                 .wordCount(0L)
                 .build());
@@ -34,7 +38,7 @@ public class FallbackController {
 
     @PostMapping("/streams-fallback")
     public ResponseEntity<AnalyticsDataFallbackModel> streamsServiceFallback() {
-        LOG.info("Returning fallback result for kafka-streams-service!");
+        LOG.info("Returning fallback result for kafka-streams-service! on port {}", port);
         return ResponseEntity.ok(AnalyticsDataFallbackModel.builder()
                 .wordCount(0L)
                 .build());

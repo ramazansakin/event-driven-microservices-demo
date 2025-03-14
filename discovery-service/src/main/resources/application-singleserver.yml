@@ -1,6 +1,10 @@
 server:
   port: 8761
 
+spring:
+  application:
+    name: eureka-discovery-service
+
 eureka:
   client:
     register-with-eureka: false
@@ -10,5 +14,6 @@ eureka:
 
 logging:
   level:
+    ROOT: DEBUG
     com.netflix.eureka: OFF
     com.netflix.discovery: OFF

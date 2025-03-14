@@ -17,8 +17,8 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
 
     private final IdGenerator idGenerator;
 
-    public MDCHandlerInterceptor(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
+    public MDCHandlerInterceptor(IdGenerator generator) {
+        this.idGenerator = generator;
     }
 
     @Override
