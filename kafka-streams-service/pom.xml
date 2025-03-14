@@ -15,6 +15,10 @@
     <dependencies>
         <dependency>
             <groupId>com.microservices.demo</groupId>
+            <artifactId>mdc-interceptor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microservices.demo</groupId>
             <artifactId>app-config-data</artifactId>
         </dependency>
         <dependency>

@@ -12,6 +12,7 @@ import com.microservices.demo.elastic.query.service.model.ElasticQueryServiceWor
 import com.microservices.demo.elastic.query.service.model.assembler.ElasticQueryServiceResponseModelAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+
+import static com.microservices.demo.mdc.Constants.CORRELATION_ID_HEADER;
+import static com.microservices.demo.mdc.Constants.CORRELATION_ID_KEY;
 
 @Service
 public class TwitterElasticQueryService implements ElasticQueryService {
@@ -99,7 +103,10 @@ public class TwitterElasticQueryService implements ElasticQueryService {
                 .build()
                 .method(HttpMethod.valueOf(query.getMethod()))
                 .uri(query.getUri(), uriBuilder -> uriBuilder.build(text))
-                .headers(h -> h.setBearerAuth(accessToken))
+                .headers(h -> {
+                    h.setBearerAuth(accessToken);
+                    h.set(CORRELATION_ID_HEADER, MDC.get(CORRELATION_ID_KEY));
+                })
                 .accept(MediaType.valueOf(query.getAccept()))
                 .retrieve()
                 .onStatus(
