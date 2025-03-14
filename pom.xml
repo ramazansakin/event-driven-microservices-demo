@@ -66,6 +66,10 @@
 		<kafka-streams-avro-serde.version>5.5.1</kafka-streams-avro-serde.version>
 		<avro.version>1.10.0</avro.version>
 
+		<micrometer-registry-prometheus.version>1.5.2</micrometer-registry-prometheus.version>
+
+		<logstash-logback-encoder.version>6.5</logstash-logback-encoder.version>
+
 	</properties>
 
 	<repositories>
@@ -331,6 +335,12 @@
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.micrometer</groupId>
+				<artifactId>micrometer-registry-prometheus</artifactId>
+				<version>${micrometer-registry-prometheus.version}</version>
 			</dependency>
 
 		</dependencies>

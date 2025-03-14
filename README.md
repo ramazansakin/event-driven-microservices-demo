@@ -3,5 +3,5 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check gateway-service, where we added an api gateway. 
-- Also check the services.yml file which is updated to use the gateway for all requests
+- Check configuration file of services where we added monitoring
+- Check docker-compose folder, where we added monitoring.yml file to add prometheus and grafana docker containers
