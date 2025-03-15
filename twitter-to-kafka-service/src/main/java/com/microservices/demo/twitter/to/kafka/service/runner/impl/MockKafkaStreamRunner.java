@@ -82,6 +82,7 @@ public class MockKafkaStreamRunner implements StreamRunner {
         simulateTwitterStream(keywords, minTweetLength, maxTweetLength, sleepTimeMs);
     }
 
+
     private void simulateTwitterStream(String[] keywords, int minTweetLength, int maxTweetLength, long sleepTimeMs) {
         Executors.newSingleThreadExecutor().submit(() -> {
             try {
