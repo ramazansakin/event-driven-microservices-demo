@@ -1,18 +1,24 @@
 package com.microservices.demo.config.server.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                .antMatchers("/actuator/**")
-                .antMatchers("/encrypt/**")
-                .antMatchers("/decrypt/**");
-        super.configure(web);
+    @Bean
+    public SecurityFilterChain webSecurityCustomizer(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(requests -> requests
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**"),
+                                new AntPathRequestMatcher("/encrypt/**"),
+                                new AntPathRequestMatcher("/decrypt/**"))
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
     }
 }
