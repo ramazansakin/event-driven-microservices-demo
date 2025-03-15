@@ -31,6 +31,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://discovery-service-1:8761/eureka/,http://discovery-service-2:8762/eureka/
+log:
+  app-name: discovery-service-1
 
 ---
 server:
@@ -45,3 +47,5 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://discovery-service-2:8762/eureka/,http://discovery-service-1:8761/eureka/
+log:
+  app-name: discovery-service-2

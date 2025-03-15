@@ -3,4 +3,5 @@
 and enter your github password and url on bootstrap.yml file of config-server
 - Then run mvn install -DskipTests command
 - Then run docker-compose up command in docker-compose folder
-- Check elastic_cluster.yml in docker-compose folder, where we added logstash and kibana docker images to aggreate logs
+- Check services.yml in docker-compose folder, where we added new instances for gateway and config server 
+for high availability and set log file name through config to prevent conflict with multiple instances of same service

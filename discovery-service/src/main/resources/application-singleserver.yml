@@ -17,3 +17,6 @@ logging:
     ROOT: DEBUG
     com.netflix.eureka: OFF
     com.netflix.discovery: OFF
+
+log:
+  app-name: discovery-service
