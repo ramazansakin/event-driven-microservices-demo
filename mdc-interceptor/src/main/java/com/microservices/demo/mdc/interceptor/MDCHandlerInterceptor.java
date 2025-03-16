@@ -6,8 +6,8 @@ import org.springframework.util.IdGenerator;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import static com.microservices.demo.mdc.Constants.CORRELATION_ID_HEADER;
 import static com.microservices.demo.mdc.Constants.CORRELATION_ID_KEY;
@@ -25,7 +25,7 @@ public class MDCHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        if (!StringUtils.isEmpty(correlationId)) {
+        if (StringUtils.hasLength(correlationId)) {
             MDC.put(CORRELATION_ID_KEY, correlationId);
         } else {
             MDC.put(CORRELATION_ID_KEY, getNewCorrelationId());
