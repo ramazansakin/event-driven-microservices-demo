@@ -8,7 +8,7 @@ spring:
       name: elastic-query-web-client-2,config-client
       uri: http://localhost:8888
       username: spring_cloud_user
-      password: ****
+      password: '1234'
 
 eureka:
   client:

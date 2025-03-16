@@ -51,7 +51,7 @@ public class WebClientConfig {
                 .baseUrl(elasticQueryWebClientConfigData.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, elasticQueryWebClientConfigData.getContentType())
                 .defaultHeader(HttpHeaders.ACCEPT, elasticQueryWebClientConfigData.getAcceptType())
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(getTcpClient())))
+                .clientConnector(new ReactorClientHttpConnector(getHttpClient()))
                 .apply(oauth2.oauth2Configuration())
                 .codecs(clientCodecConfigurer ->
                         clientCodecConfigurer
@@ -59,13 +59,12 @@ public class WebClientConfig {
                                 .maxInMemorySize(elasticQueryWebClientConfigData.getMaxInMemorySize()));
     }
 
-    private TcpClient getTcpClient() {
-        return TcpClient.create()
+    private HttpClient getHttpClient() {
+        return HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, elasticQueryWebClientConfigData.getConnectTimeoutMs())
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(
-                            new ReadTimeoutHandler(elasticQueryWebClientConfigData.getReadTimeoutMs(),
-                                    TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(elasticQueryWebClientConfigData.getReadTimeoutMs(),
+                            TimeUnit.MILLISECONDS));
                     connection.addHandlerLast(
                             new WriteTimeoutHandler(elasticQueryWebClientConfigData.getWriteTimeoutMs(),
                                     TimeUnit.MILLISECONDS));

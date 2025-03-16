@@ -5,6 +5,7 @@ import com.microservices.demo.elastic.query.web.client.common.exception.ElasticQ
 import com.microservices.demo.elastic.query.web.client.common.model.ElasticQueryWebClientRequestModel;
 import com.microservices.demo.elastic.query.web.client.common.model.ElasticQueryWebClientResponseModel;
 import com.microservices.demo.elastic.query.web.client.service.ElasticQueryWebClient;
+import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,12 +57,12 @@ public class TwitterElasticQueryWebClient implements ElasticQueryWebClient {
                         httpStatus -> httpStatus.equals(HttpStatus.UNAUTHORIZED),
                         clientResponse -> Mono.just(new BadCredentialsException("Not authenticated!")))
                 .onStatus(
-                        HttpStatus::is4xxClientError,
+                        s -> s.equals(HttpStatus.BAD_REQUEST),
                         clientResponse -> Mono.just(
-                                new ElasticQueryWebClientException(clientResponse.statusCode().getReasonPhrase())))
+                                new ElasticQueryWebClientException(clientResponse.statusCode().toString())))
                 .onStatus(
-                        HttpStatus::is5xxServerError,
-                        clientResponse -> Mono.just(new Exception(clientResponse.statusCode().getReasonPhrase())));
+                        s -> s.equals(HttpStatus.INTERNAL_SERVER_ERROR),
+                        clientResponse -> Mono.just(new Exception(clientResponse.statusCode().toString())));
     }
 
 
