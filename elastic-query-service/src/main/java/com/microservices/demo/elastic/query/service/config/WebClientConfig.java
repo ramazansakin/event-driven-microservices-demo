@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,23 +29,21 @@ public class WebClientConfig {
         return WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, elasticQueryServiceConfigData.getContentType())
                 .defaultHeader(HttpHeaders.ACCEPT, elasticQueryServiceConfigData.getAcceptType())
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(getTcpClient())))
+                .clientConnector(new ReactorClientHttpConnector(getHttpClient()))
                 .codecs(clientCodecConfigurer ->
                         clientCodecConfigurer
                                 .defaultCodecs()
                                 .maxInMemorySize(elasticQueryServiceConfigData.getMaxInMemorySize()));
     }
 
-    private TcpClient getTcpClient() {
-        return TcpClient.create()
+    private HttpClient getHttpClient() {
+        return HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, elasticQueryServiceConfigData.getConnectTimeoutMs())
                 .doOnConnected(connection -> {
-                    connection.addHandlerLast(
-                            new ReadTimeoutHandler(elasticQueryServiceConfigData.getReadTimeoutMs(),
-                                    TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(
-                            new WriteTimeoutHandler(elasticQueryServiceConfigData.getWriteTimeoutMs(),
-                                    TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new ReadTimeoutHandler(elasticQueryServiceConfigData.getReadTimeoutMs(),
+                            TimeUnit.MILLISECONDS));
+                    connection.addHandlerLast(new WriteTimeoutHandler(elasticQueryServiceConfigData.getWriteTimeoutMs(),
+                            TimeUnit.MILLISECONDS));
                 });
     }
 }

@@ -113,12 +113,12 @@ public class TwitterElasticQueryService implements ElasticQueryService {
                         s -> s.equals(HttpStatus.UNAUTHORIZED),
                         clientResponse -> Mono.just(new BadCredentialsException("Not authenticated")))
                 .onStatus(
-                        HttpStatus::is4xxClientError,
+                        s -> s.equals(HttpStatus.BAD_REQUEST),
                         clientResponse -> Mono.just(new
-                                ElasticQueryServiceException(clientResponse.statusCode().getReasonPhrase())))
+                                ElasticQueryServiceException(clientResponse.statusCode().toString())))
                 .onStatus(
-                        HttpStatus::is5xxServerError,
-                        clientResponse -> Mono.just(new Exception(clientResponse.statusCode().getReasonPhrase())))
+                        s -> s.equals(HttpStatus.INTERNAL_SERVER_ERROR),
+                        clientResponse -> Mono.just(new Exception(clientResponse.statusCode().toString())))
                 .bodyToMono(ElasticQueryServiceWordCountResponseModel.class)
                 .log()
                 .block();

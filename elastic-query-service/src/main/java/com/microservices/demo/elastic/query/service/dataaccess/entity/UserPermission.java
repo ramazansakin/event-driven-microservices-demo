@@ -2,9 +2,9 @@ package com.microservices.demo.elastic.query.service.dataaccess.entity;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
