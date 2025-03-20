@@ -9,8 +9,9 @@ spring:
     config:
       name: twitter-to-kafka-service,config-client
       username: spring_cloud_user
-      password: '1234'
+      password: 'abc123'
 
+# logback APP_NAME property
 log:
   app-name: twitter-to-kafka-service
 

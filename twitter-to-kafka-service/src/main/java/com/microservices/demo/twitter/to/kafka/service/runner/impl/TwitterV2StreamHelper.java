@@ -2,6 +2,8 @@ package com.microservices.demo.twitter.to.kafka.service.runner.impl;
 
 import com.microservices.demo.config.TwitterToKafkaServiceConfigData;
 import com.microservices.demo.twitter.to.kafka.service.listener.TwitterKafkaStatusListener;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -16,8 +18,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import twitter4j.Status;
@@ -38,29 +38,22 @@ import java.util.Map;
 
 @Component
 @ConditionalOnExpression("${twitter-to-kafka-service.enable-v2-tweets} && not ${twitter-to-kafka-service.enable-mock-tweets}")
-//@ConditionalOnProperty(name = "twitter-to-kafka-service.enable-v2-tweets", havingValue = "true", matchIfMissing = true)
+@Slf4j
+@RequiredArgsConstructor
 public class TwitterV2StreamHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TwitterV2StreamHelper.class);
-
     private final TwitterToKafkaServiceConfigData twitterToKafkaServiceConfigData;
-
     private final TwitterKafkaStatusListener twitterKafkaStatusListener;
 
-    private static final String tweetAsRawJson = "{" +
-            "\"created_at\":\"{0}\"," +
-            "\"id\":\"{1}\"," +
-            "\"text\":\"{2}\"," +
-            "\"user\":{\"id\":\"{3}\"}" +
-            "}";
+    private static final String TWEET_JSON_TEMPLATE = "{" +
+                                                      "\"created_at\":\"{0}\"," +
+                                                      "\"id\":\"{1}\"," +
+                                                      "\"text\":\"{2}\"," +
+                                                      "\"user\":{\"id\":\"{3}\"}" +
+                                                      "}";
 
     private static final String TWITTER_STATUS_DATE_FORMAT = "EEE MMM dd HH:mm:ss zzz yyyy";
 
-    public TwitterV2StreamHelper(TwitterToKafkaServiceConfigData twitterToKafkaServiceConfigData,
-                                 TwitterKafkaStatusListener twitterKafkaStatusListener) {
-        this.twitterToKafkaServiceConfigData = twitterToKafkaServiceConfigData;
-        this.twitterKafkaStatusListener = twitterKafkaStatusListener;
-    }
 
     /*
      * This method calls the filtered stream endpoint and streams Tweets from it
@@ -90,7 +83,7 @@ public class TwitterV2StreamHelper {
                     try {
                         status = TwitterObjectFactory.createStatus(tweet);
                     } catch (TwitterException e) {
-                        LOG.error("Could not create status for text: {}", tweet, e);
+                        log.error("Could not create status for text: {}", tweet, e);
                     }
                     if (status != null) {
                         twitterKafkaStatusListener.onStatus(status);
@@ -105,11 +98,11 @@ public class TwitterV2StreamHelper {
      * */
     void setupRules(String bearerToken, Map<String, String> rules) throws IOException, URISyntaxException {
         List<String> existingRules = getRules(bearerToken);
-        if (existingRules.size() > 0) {
+        if (!existingRules.isEmpty()) {
             deleteRules(bearerToken, existingRules);
         }
         createRules(bearerToken, rules);
-        LOG.info("Created rules for twitter stream {}", rules.keySet().toArray());
+        log.info("Created rules for twitter stream {}", rules.keySet().toArray());
     }
 
 
@@ -127,12 +120,12 @@ public class TwitterV2StreamHelper {
         HttpPost httpPost = new HttpPost(uriBuilder.build());
         httpPost.setHeader("Authorization", String.format("Bearer %s", bearerToken));
         httpPost.setHeader("content-type", "application/json");
-        StringEntity body = new StringEntity(getFormattedString("{\"add\": [%s]}", rules));
+        StringEntity body = new StringEntity(getFormattedString(rules));
         httpPost.setEntity(body);
         HttpResponse response = httpClient.execute(httpPost);
         HttpEntity entity = response.getEntity();
         if (null != entity) {
-            System.out.println(EntityUtils.toString(entity, "UTF-8"));
+            log.info(EntityUtils.toString(entity, "UTF-8"));
         }
     }
 
@@ -140,7 +133,7 @@ public class TwitterV2StreamHelper {
      * Helper method to get existing rules
      * */
     private List<String> getRules(String bearerToken) throws URISyntaxException, IOException {
-        List<String> rules = new ArrayList<>();
+
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build())
@@ -153,6 +146,8 @@ public class TwitterV2StreamHelper {
         httpGet.setHeader("content-type", "application/json");
         HttpResponse response = httpClient.execute(httpGet);
         HttpEntity entity = response.getEntity();
+
+        List<String> rules = new ArrayList<>();
         if (null != entity) {
             JSONObject json = new JSONObject(EntityUtils.toString(entity, "UTF-8"));
             if (json.length() > 1 && json.has("data")) {
@@ -170,6 +165,7 @@ public class TwitterV2StreamHelper {
      * Helper method to delete rules
      * */
     private void deleteRules(String bearerToken, List<String> existingRules) throws URISyntaxException, IOException {
+
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build())
@@ -180,42 +176,44 @@ public class TwitterV2StreamHelper {
         HttpPost httpPost = new HttpPost(uriBuilder.build());
         httpPost.setHeader("Authorization", String.format("Bearer %s", bearerToken));
         httpPost.setHeader("content-type", "application/json");
-        StringEntity body = new StringEntity(getFormattedString("{ \"delete\": { \"ids\": [%s]}}",
+        StringEntity body = new StringEntity(getFormattedString(
                 existingRules));
         httpPost.setEntity(body);
         HttpResponse response = httpClient.execute(httpPost);
         HttpEntity entity = response.getEntity();
         if (null != entity) {
-            System.out.println(EntityUtils.toString(entity, "UTF-8"));
+            log.info(EntityUtils.toString(entity, "UTF-8"));
         }
     }
 
-    private String getFormattedString(String string, List<String> ids) {
+    private String getFormattedString(List<String> ids) {
+
         StringBuilder sb = new StringBuilder();
         if (ids.size() == 1) {
-            return String.format(string, "\"" + ids.get(0) + "\"");
+            return String.format("{ \"delete\": { \"ids\": [%s]}}", "\"" + ids.get(0) + "\"");
         } else {
             for (String id : ids) {
-                sb.append("\"" + id + "\"" + ",");
+                sb.append("\"").append(id).append("\"").append(",");
             }
             String result = sb.toString();
-            return String.format(string, result.substring(0, result.length() - 1));
+            return String.format("{ \"delete\": { \"ids\": [%s]}}", result.substring(0, result.length() - 1));
         }
     }
 
-    private String getFormattedString(String string, Map<String, String> rules) {
+    private String getFormattedString(Map<String, String> rules) {
         StringBuilder sb = new StringBuilder();
         if (rules.size() == 1) {
             String key = rules.keySet().iterator().next();
-            return String.format(string, "{\"value\": \"" + key + "\", \"tag\": \"" + rules.get(key) + "\"}");
+            return String.format("{\"add\": [%s]}", "{\"value\": \"" + key + "\", \"tag\": \"" + rules.get(key) + "\"}");
         } else {
             for (Map.Entry<String, String> entry : rules.entrySet()) {
                 String value = entry.getKey();
                 String tag = entry.getValue();
-                sb.append("{\"value\": \"" + value + "\", \"tag\": \"" + tag + "\"}" + ",");
+                sb.append("{\"value\": \"").append(value).append("\", \"tag\": \"").append(tag).append("\"}").append(",");
             }
             String result = sb.toString();
-            return String.format(string, result.substring(0, result.length() - 1));
+
+            return String.format("{\"add\": [%s]}", result.substring(0, result.length() - 1));
         }
     }
 
@@ -233,7 +231,7 @@ public class TwitterV2StreamHelper {
     }
 
     private String formatTweetAsJsonWithParams(String[] params) {
-        String tweet = tweetAsRawJson;
+        String tweet = TWEET_JSON_TEMPLATE;
 
         for (int i = 0; i < params.length; i++) {
             tweet = tweet.replace("{" + i + "}", params[i]);
@@ -242,3 +240,4 @@ public class TwitterV2StreamHelper {
     }
 
 }
+
